@@ -1,0 +1,12 @@
+---
+platform: linux
+image: "docker:///java"
+params:
+  TERM: xterm
+inputs:
+  - name: spring-hello-repo
+  - name: spring-hello-version
+outputs:
+  - name: art
+run:
+  path: ./spring-hello-repo/complete/ci/scripts/run_gradle

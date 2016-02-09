@@ -1,0 +1,7 @@
+---
+applications:
+- name: hello-world
+  memory: 512M
+  instances: 1
+  host: hello-world-dev-push
+  buildpack: java_buildpack

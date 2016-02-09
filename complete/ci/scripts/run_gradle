@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+VERSION=`cat spring-music-version/number`
+HUH=`pwd`
+
+echo "$HUH"
+echo "$VERSION"
+
+cd spring-music-repo
+./gradlew clean test build -Pwar_version="$VERSION"
+ls -al build/libs/
+
+echo "Moving to $HUH/art"
+mkdir "$HUH/art"
+mv "build/libs/gs-spring-boot-$VERSION.war" "$HUH/art/"
+ls "$HUH/art/"
