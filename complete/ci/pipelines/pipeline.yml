@@ -75,6 +75,6 @@ jobs:
     - put: cf-dev
       params:
         manifest: spring-hello-repo/complete/manifests/dev-manifest.yml
-        path: spring-hello-war/spring-hello-*.jar
+        path: spring-hello-war/gs-spring-boot-*.jar
     - task: run-functional-tests
       file: spring-hello-repo/complete/ci/tasks/functional-tests.yml
