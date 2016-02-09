@@ -71,6 +71,7 @@ jobs:
     - get: spring-hello-repo
       passed: [build]
     - get: spring-hello-war
+      passed: [build]
       trigger: true
     - put: cf-dev
       params:
