@@ -15,7 +15,7 @@ resources:
   type: s3
   source:
     bucket: {{concourse-bucket}}
-    regexp: gs-spring-boot-(.*).war
+    regexp: gs-spring-boot-(.*).jar
     access_key_id: {{s3-access-token}}
     secret_access_key: {{s3-secret-key}}
 
@@ -62,7 +62,7 @@ jobs:
   - task: build
     file: spring-hello-repo/complete/ci/tasks/build.yml
   - put: spring-hello-war
-    params: {file: art/gs-spring-boot-*.war}
+    params: {file: art/gs-spring-boot-*.jar}
   - put: spring-hello-version
     params: {file: spring-hello-version/number}
 
@@ -75,6 +75,6 @@ jobs:
     - put: cf-dev
       params:
         manifest: spring-hello-repo/complete/manifests/dev-manifest.yml
-        path: spring-hello-war/spring-hello-*.war
+        path: spring-hello-war/spring-hello-*.jar
     - task: run-functional-tests
       file: spring-hello-repo/complete/ci/tasks/functional-tests.yml
