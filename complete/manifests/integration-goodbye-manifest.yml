@@ -1,0 +1,7 @@
+---
+applications:
+- name: goodbye-world-integration
+  memory: 512M
+  instances: 1
+  host: goodbye-world-integration-push
+  buildpack: java_buildpack

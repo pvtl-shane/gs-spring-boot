@@ -1,0 +1,7 @@
+---
+applications:
+- name: hello-world-integration
+  memory: 512M
+  instances: 1
+  host: goodbye-hello-integration-push
+  buildpack: java_buildpack
