@@ -8,4 +8,4 @@ cd spring-hello-repo/complete
 ls -al build/libs/
 
 mkdir "STARTING_DIRECTORY/art"
-mv "build/libs/gs-spring-boot-$VERSION.jar" "STARTING_DIRECTORY/art/"
+mv "build/libs/gs-spring-boot-$VERSION.jar" "$STARTING_DIRECTORY/art/"
