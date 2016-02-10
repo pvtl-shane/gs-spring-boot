@@ -7,5 +7,5 @@ cd spring-hello-repo/complete
 ./gradlew clean test build -Pwar_version="$VERSION"
 ls -al build/libs/
 
-mkdir "STARTING_DIRECTORY/art"
-mv "build/libs/gs-spring-boot-$VERSION.jar" "$STARTING_DIRECTORY/art/"
+mkdir "$STARTING_DIRECTORY/artifact"
+mv "build/libs/gs-spring-boot-$VERSION.jar" "$STARTING_DIRECTORY/artifact/"
