@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 
 VERSION=`cat spring-hello-version/number`
-HUH=`pwd`
-
-echo "$HUH"
-echo "$VERSION"
+STARTING_DIRECTORY=`pwd`
 
 cd spring-hello-repo/complete
 ./gradlew clean test build -Pwar_version="$VERSION"
 ls -al build/libs/
 
-echo "Moving to $HUH/art"
-mkdir "$HUH/art"
-mv "build/libs/gs-spring-boot-$VERSION.jar" "$HUH/art/"
-ls "$HUH/art/"
+mkdir "STARTING_DIRECTORY/art"
+mv "build/libs/gs-spring-boot-$VERSION.jar" "STARTING_DIRECTORY/art/"

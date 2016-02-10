@@ -1,0 +1,9 @@
+---
+platform: linux
+image: "docker:///java"
+params:
+  TERM: xterm
+inputs:
+  - name: application-integration-tests
+run:
+  path: ./application-integration-tests/complete/ci/scripts/run-integration-tests

@@ -1,0 +1,7 @@
+---
+applications:
+- name: goodbye-world
+  memory: 512M
+  instances: 1
+  host: goodbye-world-dev-push
+  buildpack: java_buildpack

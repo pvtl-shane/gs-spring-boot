@@ -1,0 +1,12 @@
+---
+platform: linux
+image: "docker:///java"
+params:
+  TERM: xterm
+inputs:
+  - name: spring-goodbye-repo
+  - name: spring-goodbye-version
+outputs:
+  - name: artifact
+run:
+  path: ./spring-goodbye-repo/complete/ci/scripts/run_gradle_goodbye

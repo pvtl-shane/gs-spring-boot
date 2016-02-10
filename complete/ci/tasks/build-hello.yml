@@ -7,6 +7,6 @@ inputs:
   - name: spring-hello-repo
   - name: spring-hello-version
 outputs:
-  - name: art
+  - name: artifact
 run:
-  path: ./spring-hello-repo/complete/ci/scripts/run_gradle
+  path: ./spring-hello-repo/complete/ci/scripts/run_gradle_hello

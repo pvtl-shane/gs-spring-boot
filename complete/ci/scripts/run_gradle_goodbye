@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+VERSION=`cat spring-goodbye-version/number`
+STARTING_DIRECTORY=`pwd`
+
+cd spring-goodbye-repo/complete
+./gradlew clean test build -Pwar_version="$VERSION"
+ls -al build/libs/
+
+mkdir "STARTING_DIRECTORY/art"
+mv "build/libs/gs-spring-boot-$VERSION.jar" "STARTING_DIRECTORY/art/"

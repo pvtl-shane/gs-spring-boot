@@ -4,7 +4,7 @@ resources:
   type: semver
   source:
     driver: s3
-    bucket: {{concourse-bucket}}
+    bucket: {{hello-concourse-bucket}}
     key: semvar
     access_key_id: {{s3-access-token}}
     secret_access_key: {{s3-secret-key}}
@@ -14,7 +14,7 @@ resources:
 - name: spring-hello-war
   type: s3
   source:
-    bucket: {{concourse-bucket}}
+    bucket: {{hello-concourse-bucket}}
     regexp: gs-spring-boot-(.*).jar
     access_key_id: {{s3-access-token}}
     secret_access_key: {{s3-secret-key}}
@@ -24,8 +24,14 @@ resources:
   source: 
     uri: https://github.com/pvtl-shane/gs-spring-boot
     branch: master
-    
-- name: cf-dev
+
+- name: application-integration-tests
+  type: git
+  source:
+    uri: https://github.com/pvtl-shane/gs-spring-boot
+    branch: master
+
+- name: cf-hello-dev
   type: cf
   source:
     api: {{cf-target}}
@@ -33,6 +39,59 @@ resources:
     password: {{cf-password}}
     organization: {{cf-dev-organization}}
     space: {{cf-dev-space}}
+    
+- name: spring-goodbye-version
+  type: semver
+  source:
+    driver: s3
+    bucket: {{goodbye-concourse-bucket}}
+    key: semvar
+    access_key_id: {{s3-access-token}}
+    secret_access_key: {{s3-secret-key}}
+    region_name: us-east-1
+    initial_version: 1.0.0
+
+- name: spring-goodbye-war
+  type: s3
+  source:
+    bucket: {{goodbye-concourse-bucket}}
+    regexp: gs-spring-boot-(.*).jar
+    access_key_id: {{s3-access-token}}
+    secret_access_key: {{s3-secret-key}}
+
+- name: spring-goodbye-repo
+  type: git
+  source:
+    uri: https://github.com/pvtl-shane/gs-spring-boot
+    branch: master
+
+- name: cf-goodbye-dev
+  type: cf
+  source:
+    api: {{cf-target}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    organization: {{cf-dev-organization}}
+    space: {{cf-dev-space}}
+
+- name: spring-hello-integration
+  type: cf
+  source:
+    api: {{cf-target}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    organization: {{cf-dev-organization}}
+    space: {{cf-dev-space}}
+
+- name: spring-goodbye-integration
+  type: cf
+  source:
+    api: {{cf-target}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    organization: {{cf-dev-organization}}
+    space: {{cf-dev-space}}
+        
 #
 #- name: cf-staging
 #  type: cf
@@ -53,29 +112,80 @@ resources:
 #    space:
 
 jobs:
-- name: build
+- name: build-hello
   plan:
   - get: spring-hello-repo
     trigger: true
   - get: spring-hello-version
     params: {bump: minor}
   - task: build
-    file: spring-hello-repo/complete/ci/tasks/build.yml
+    file: spring-hello-repo/complete/ci/tasks/build-hello.yml
   - put: spring-hello-war
-    params: {file: art/gs-spring-boot-*.jar}
+    params: {file: artifact/gs-spring-boot-*.jar}
   - put: spring-hello-version
     params: {file: spring-hello-version/number}
 
-- name: deploy-to-dev
+- name: deploy-hello-to-dev
   plan:
     - get: spring-hello-repo
-      passed: [build]
+      passed: [build-hello]
     - get: spring-hello-war
-      passed: [build]
+      passed: [build-hello]
       trigger: true
-    - put: cf-dev
+    - put: cf-hello-dev
       params:
-        manifest: spring-hello-repo/complete/manifests/dev-manifest.yml
+        manifest: spring-hello-repo/complete/manifests/dev-hello-manifest.yml
         path: spring-hello-war/gs-spring-boot-*.jar
     - task: run-functional-tests
-      file: spring-hello-repo/complete/ci/tasks/functional-tests.yml
+      file: spring-hello-repo/complete/ci/tasks/functional-tests-hello.yml
+
+- name: build-goodbye
+  plan:
+  - get: spring-goodbye-repo
+    trigger: true
+  - get: spring-goodbye-version
+    params: {bump: minor}
+  - task: build
+    file: spring-goodbye-repo/complete/ci/tasks/build-goodbye.yml
+  - put: spring-goodbye-war
+    params: {file: artifact/gs-spring-boot-*.jar}
+  - put: spring-goodbye-version
+    params: {file: spring-goodbye-version/number}
+
+- name: deploy-goodbye-to-dev
+  plan:
+    - get: spring-goodbye-repo
+      passed: [build-goodbye]
+    - get: spring-goodbye-war
+      passed: [build-goodbye]
+      trigger: true
+    - put: cf-goodbye-dev
+      params:
+        manifest: spring-goodbye-repo/complete/manifests/dev-goodbye-manifest.yml
+        path: spring-goodbye-war/gs-spring-boot-*.jar
+    - task: run-functional-tests
+      file: spring-goodbye-repo/complete/ci/tasks/functional-tests-goodbye.yml
+
+- name: integration
+  plan:
+    - aggregate:
+      - get: spring-hello-repo
+        passed: [deploy-hello-to-dev]
+      - get: spring-hello-war
+        passed: [deploy-hello-to-dev]
+      - get: spring-goodbye-repo
+        passed: [deploy-goodbye-to-dev]
+      - get: spring-goodbye-war
+        passed: [deploy-goodbye-to-dev]
+        trigger: true
+      - get: application-integration-tests
+    - put: spring-goodbye-integration
+      params:
+        manifest: spring-goodbye-repo/complete/manifests/integration-goodbye-manifest.yml
+        path: spring-goodbye-war/gs-spring-boot-*.jar
+    - put: spring-hello-integration
+      params:
+        manifest: spring-hello-repo/complete/manifests/integration-hello-manifest.yml
+        path: spring-hello-war/gs-spring-boot-*.jar
+    - task: run-integration-tests
+      file: application-integration-tests/complete/ci/tasks/integration-tests.yml
